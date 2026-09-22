@@ -305,6 +305,14 @@
   </div>
   <div class="set-actions"><button class="btn" id="saveRoomBtn">Guardar código</button></div>
   <hr style="border:none;border-top:1px solid var(--line);margin:22px 0">
+  <h3>Búsqueda avanzada (Spoonacular)</h3>
+  <p class="lead">Opcional. Pega tu propia clave gratuita de <a href="https://spoonacular.com/food-api" target="_blank" rel="noopener">spoonacular.com</a> para buscar más recetas. Se guarda solo en este dispositivo.</p>
+  <div class="field">
+    <label>Clave de API</label>
+    <input id="spoonInp" type="password" autocomplete="off" placeholder="Pega tu clave aquí">
+  </div>
+  <div class="set-actions"><button class="btn" id="saveSpoonBtn">Guardar clave</button> <button class="btn ghost sm" id="clearSpoonBtn" type="button">Quitar clave</button></div>
+  <hr style="border:none;border-top:1px solid var(--line);margin:22px 0">
   <h3>Sinónimos de ingredientes</h3>
   <p class="lead">Enséñale equivalencias para reconocer ingredientes con otro nombre o en inglés (ej. gaseosa = refresco, shrimp = camarón). Sirve también para las recetas del mundo.</p>
   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
@@ -325,7 +333,7 @@
   <div class="statusline" id="syncStatus">Estado: modo local (sin sincronizar).</div>
   <hr style="border:none;border-top:1px solid var(--line);margin:22px 0">
   <div class="field"><label style="display:flex;gap:8px;align-items:center;cursor:pointer;font-weight:600"><input type="checkbox" id="trChk"> Traducir recetas del mundo al español</label><div class="hint">Automático al abrir una receta en inglés. Si el traductor no responde, muestra el original.</div></div>
-  <div class="hint" style="text-align:center;margin-top:12px">Cocina Vicuy · v22</div>
+  <div class="hint" style="text-align:center;margin-top:12px">Cocina Vicuy · v1 (Recetas)</div>
 </div></div></div>
 
 <div class="toast" id="toast"></div>
@@ -334,15 +342,27 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
-/* ================== CONFIGURACIÓN FIJA (opcional) ==================
-   Rellena esto UNA sola vez y la app quedará conectada siempre, en
-   todos los dispositivos, sin tener que sincronizar ni pegar la clave
-   cada vez que la abras desde la pantalla de inicio.
-===================================================================== */
-/* Claves codificadas (para que GitHub no bloquee la subida). Se decodifican al abrir. */
-const MI_FIREBASE = JSON.parse(atob("eyJhcGlLZXkiOiJBSXphU3lBRlJ2YThpLVBFQ2pCbERtZnBtOVRJeV9nMnJtYUFKeW8iLCJhdXRoRG9tYWluIjoibWktY29jaW5hLTk1NDA0LmZpcmViYXNlYXBwLmNvbSIsImRhdGFiYXNlVVJMIjoiaHR0cHM6Ly9taS1jb2NpbmEtOTU0MDQtZGVmYXVsdC1ydGRiLmZpcmViYXNlaW8uY29tIiwicHJvamVjdElkIjoibWktY29jaW5hLTk1NDA0Iiwic3RvcmFnZUJ1Y2tldCI6Im1pLWNvY2luYS05NTQwNC5maXJlYmFzZXN0b3JhZ2UuYXBwIiwibWVzc2FnaW5nU2VuZGVySWQiOiI3OTIwOTcxOTE3NjUiLCJhcHBJZCI6IjE6NzkyMDk3MTkxNzY1OndlYjo4ZDk4ZmMyY2Y0NjBiYmRkMmFlMWRjIn0="));
-const MI_CODIGO = "cocina";
-const MI_SPOONACULAR = atob("MmZmMWE1ZDg3YzM3NDA5MThmNmQ4OGE3NzU4NGI0ZDQ=");
+/* ================== CONFIGURACIÓN ==================
+   Configuración web de Firebase. Estos valores NO son secretos: identifican
+   el proyecto. La seguridad la dan las reglas de Realtime Database
+   (ver database.rules.json en el repositorio).
+===================================================== */
+const MI_FIREBASE_CONFIG = {
+  apiKey: "PEGA_TU_API_KEY",
+  authDomain: "PEGA_TU_PROYECTO.firebaseapp.com",
+  databaseURL: "https://PEGA_TU_PROYECTO-default-rtdb.firebaseio.com",
+  projectId: "PEGA_TU_PROYECTO",
+  appId: "PEGA_TU_APP_ID"
+};
+// Si la configuración no se ha pegado, la app funciona en modo local (sin sincronizar)
+const MI_FIREBASE = MI_FIREBASE_CONFIG.apiKey.startsWith('PEGA') ? null : MI_FIREBASE_CONFIG;
+/* Sala por defecto: "demo" es pública para quien visita la app.
+   Tus datos reales van en un código privado (mín. 12 caracteres) que se
+   guarda en cada dispositivo desde ⚙️ → Código de cocina. */
+const MI_CODIGO = "demo";
+/* La clave de Spoonacular NO va en el código: cada usuario la pega en ⚙️
+   y queda guardada solo en su navegador (localStorage). */
+const MI_SPOONACULAR = "";
 /* =================================================================== */
 /* ============================================================ DATOS ============================================================ */
 const CATS = {
@@ -600,7 +620,7 @@ function catOf(name){
 }
 
 /* ============================================================ ESTADO ============================================================ */
-const LS={pantry:'micocina_pantry_v2',menu:'micocina_menu_v2',shop:'micocina_shop_v2',custom:'micocina_custom_v1',fav:'micocina_fav_v1',api:'micocina_api_v1',profile:'micocina_profile_v1',cats:'micocina_cats_v1',hidden:'micocina_hidden_v1',catnames:'micocina_catnames_v1',spoon:'micocina_spoon_v1',hist:'micocina_hist_v1',syn:'micocina_syn_v1',dislike:'micocina_dislike_v1',tr:'micocina_tr_v1',autotr:'micocina_autotr_v1',cfg:'micocina_fb_cfg',room:'micocina_room'};
+const LS={pantry:'recetas_pantry_v2',menu:'recetas_menu_v2',shop:'recetas_shop_v2',custom:'recetas_custom_v1',fav:'recetas_fav_v1',api:'recetas_api_v1',profile:'recetas_profile_v1',cats:'recetas_cats_v1',hidden:'recetas_hidden_v1',catnames:'recetas_catnames_v1',spoon:'recetas_spoon_v1',hist:'recetas_hist_v1',syn:'recetas_syn_v1',dislike:'recetas_dislike_v1',tr:'recetas_tr_v1',autotr:'recetas_autotr_v1',cfg:'recetas_fb_cfg',room:'recetas_room'};
 let pantry=loadPantry();
 let currentMenu=JSON.parse(localStorage.getItem(LS.menu)||'null');
 let shopChecked=JSON.parse(localStorage.getItem(LS.shop)||'{}');
@@ -722,7 +742,7 @@ function updateStatus(){
         banner=document.getElementById('localBanner'), st=document.getElementById('syncStatus');
   const cloud=Sync.mode==='cloud';
   pill.classList.toggle('on',cloud);
-  txt.textContent = cloud?('Sincronizado · '+Sync.room):'Modo local';
+  txt.textContent = cloud?(Sync.room==='demo'?'Demo pública':'Sincronizado · privado'):'Modo local';
   banner.classList.toggle('hidden',cloud);
   if(st){ st.className='statusline'+(cloud?' ok':'');
     st.textContent = cloud?('✅ Conectado. Código de cocina: "'+Sync.room+'". Los cambios se comparten en tiempo real.')
@@ -767,6 +787,7 @@ function openSettings(){
   document.getElementById('pfName').value=profile.name||'';
   pendingPhoto=undefined; pfSetPreview(profile.photo||null);
   document.getElementById('roomInp').value=(localStorage.getItem(LS.room)||(typeof MI_CODIGO!=='undefined'&&MI_CODIGO)||'');
+  document.getElementById('spoonInp').value=spoonKey||'';
   renderSynList();
   renderDislikeList();
   document.getElementById('trChk').checked=autoTr;
@@ -795,12 +816,21 @@ document.getElementById('trChk').onchange=e=>{ autoTr=e.target.checked; localSto
 document.getElementById('bannerSync').onclick=openSettings;
 document.getElementById('settings').onclick=e=>{ if(e.target.id==='settings') closeSettings(); };
 document.getElementById('saveRoomBtn').onclick=()=>{
-  const code=document.getElementById('roomInp').value.trim() || (typeof MI_CODIGO!=='undefined'&&MI_CODIGO) || 'casa';
+  const code=document.getElementById('roomInp').value.trim() || (typeof MI_CODIGO!=='undefined'&&MI_CODIGO) || 'demo';
+  // Las reglas de Firebase solo aceptan "demo" o códigos de 12+ caracteres (difíciles de adivinar)
+  if(code!=='demo' && code.length<12){ setSt('⚠️ El código debe tener al menos 12 caracteres (ej. cocina-silvia-8f3k2).',true); return; }
   localStorage.setItem(LS.room, code);
   try{ if(Sync.db) Sync.db.ref(Sync.base()).off(); }catch(e){}
   if(typeof MI_FIREBASE!=='undefined' && MI_FIREBASE){ const r=Sync.connect((typeof MI_FIREBASE==='string')?MI_FIREBASE:JSON.stringify(MI_FIREBASE), code); if(!r.ok) setSt('⚠️ '+r.err,true); else setSt('✅ Conectado a “'+code+'”',false); }
   updateStatus(); toast('Código de cocina: '+code); closeSettings();
 };
+// Guardar / quitar la clave de Spoonacular (solo en este navegador)
+document.getElementById('saveSpoonBtn').onclick=()=>{
+  const k=document.getElementById('spoonInp').value.trim();
+  if(!k){ toast('Pega una clave primero.'); return; }
+  spoonKey=k; localStorage.setItem(LS.spoon,k); spoonCache={}; toast('Búsqueda avanzada activada'); };
+document.getElementById('clearSpoonBtn').onclick=()=>{
+  spoonKey=''; localStorage.removeItem(LS.spoon); document.getElementById('spoonInp').value=''; toast('Clave eliminada de este dispositivo'); };
 function setSt(msg,err){ const st=document.getElementById('syncStatus'); st.className='statusline'+(err?' err':''); st.textContent=msg; }
 
 /* ============================================================ DESPENSA ============================================================ */

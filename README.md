@@ -2,7 +2,7 @@
 
 **App web progresiva (PWA) para planear comidas**: despensa, recetario y menú semanal con lista de mercado automática. Sincroniza entre dispositivos en tiempo real y funciona sin conexión.
 
-🔗 **Demo:** [scmelor.github.io/Mi-Cocina](https://scmelor.github.io/Mi-Cocina/) *(abre la cocina pública "demo"; cualquiera puede editarla)*
+🔗 **Demo:** [scmelor.github.io/Recetas](https://scmelor.github.io/Recetas/) *(abre la cocina pública "demo"; cualquiera puede editarla)*
 
 <p align="center">
   <img src="docs/mercado.png" alt="Despensa por categorías" width="32%">
@@ -37,6 +37,7 @@
 
 - Los datos se guardan en **"salas"** identificadas por un **código de cocina**.
 - Las reglas de Realtime Database ([`database.rules.json`](database.rules.json)) solo permiten la sala pública `demo` o códigos de **12 caracteres o más**. No se puede listar la base completa, así que nadie puede descubrir otras salas.
+- Cada instalación guarda sus preferencias en `localStorage` con un prefijo propio (`recetas_`).
 - La **clave de Spoonacular no está en el código**: cada usuario pega la suya en ⚙️ y queda guardada solo en su navegador.
 
 ```json
@@ -58,10 +59,11 @@
 1. Haz un *fork* o descarga el repositorio.
 2. Crea un proyecto en [Firebase](https://console.firebase.google.com) y activa **Realtime Database**.
 3. En **Reglas**, pega el contenido de `database.rules.json` y publica.
-4. En `index.html`, reemplaza `MI_FIREBASE` por la configuración web de tu proyecto.
+4. En `index.html`, reemplaza los valores `PEGA_...` de `MI_FIREBASE_CONFIG` por la configuración web de tu proyecto. Sin configuración, la app funciona en modo local.
 5. Activa **GitHub Pages** (Settings → Pages → `main` / root).
-6. En la app: ⚙️ → **Código de cocina** → escribe un código privado de 12 caracteres o más y úsalo igual en todos tus dispositivos.
-7. (opcional) ⚙️ → **Búsqueda avanzada** → pega tu clave gratuita de Spoonacular.
+6. Al actualizar `index.html`, sube la versión de `CACHE` en `sw.js` (`recetas-v1` → `recetas-v2`).
+7. En la app: ⚙️ → **Código de cocina** → escribe un código privado de 12 caracteres o más y úsalo igual en todos tus dispositivos.
+8. (opcional) ⚙️ → **Búsqueda avanzada** → pega tu clave gratuita de Spoonacular.
 
 ### Instalar en el celular
 

@@ -1,7 +1,8 @@
 {
-  "name": "Cocina Vicuy",
-  "short_name": "Cocina Vicuy",
-  "description": "Mercado, recetas y menú semanal para 1-2 personas.",
+  "id": "./",
+  "name": "Recetas · Cocina Vicuy",
+  "short_name": "Recetas",
+  "description": "Despensa, recetario y menú semanal con lista de mercado.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

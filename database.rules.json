@@ -1,0 +1,10 @@
+{
+  "rules": {
+    "rooms": {
+      "$room": {
+        ".read": "$room === 'demo' || $room.length >= 12",
+        ".write": "$room === 'demo' || $room.length >= 12"
+      }
+    }
+  }
+}
