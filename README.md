@@ -5,9 +5,9 @@
 🔗 **Demo:** [scmelor.github.io/Recetas](https://scmelor.github.io/Recetas/) *(abre la cocina pública "demo"; cualquiera puede editarla)*
 
 <p align="center">
-  <img src="docs/mercado.png" alt="Despensa por categorías" width="32%">
-  <img src="docs/recetas.png" alt="Recetario" width="32%">
-  <img src="docs/menu.png" alt="Menú semanal" width="32%">
+  <img src="mercado.png" alt="Despensa por categorías" width="32%">
+  <img src="recetas.png" alt="Recetario" width="32%">
+  <img src="menu.png" alt="Menú semanal" width="32%">
 </p>
 
 ---
