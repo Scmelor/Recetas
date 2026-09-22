@@ -1,5 +1,5 @@
 /* Cocina Vicuy · Service Worker (PWA) */
-const CACHE = 'cocina-vicuy-v2';
+const CACHE = 'cocina-vicuy-v3';
 const SHELL = [
   './',
   './index.html',
