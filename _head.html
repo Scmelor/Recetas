@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Cocina · Recetas y Menú Semanal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f3ec; --surface:#ffffff; --surface-2:#faf7f0; --ink:#211f1b; --muted:#8b8377;
+    --line:#ece5d8; --brand:#15774a; --brand-d:#0f5c39; --brand-soft:#e7f1eb;
+    --amber:#d99a2b; --amber-soft:#fbf1dd; --terra:#c1492f; --terra-soft:#f8e6df;
+    --ok:#15774a;
+    --sh-sm:0 1px 2px rgba(40,30,10,.05),0 2px 6px rgba(40,30,10,.04);
+    --sh:0 14px 40px -18px rgba(40,30,10,.35);
+    --r:16px; --r-lg:20px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);
+    background:
+      radial-gradient(900px 380px at 88% -8%,#eef4ef 0,rgba(238,244,239,0) 60%),
+      radial-gradient(700px 320px at 5% 0%,#fbf3e2 0,rgba(251,243,226,0) 55%),
+      var(--bg);
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+  }
+  .container{max-width:1120px;margin:0 auto;padding:0 20px}
+  h1,h2,h3,h4,.display{font-family:'Fraunces',Georgia,serif}
+
+  /* Header */
+  header{background:rgba(255,255,255,.78);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}
+  .hbar{display:flex;align-items:center;gap:14px;padding:14px 0}
+  .logo{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--brand),var(--brand-d));
+    display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:var(--sh-sm);flex:none;position:relative}
+  .logo::after{content:"";position:absolute;left:8px;right:8px;bottom:5px;height:3px;border-radius:3px;
+    background:linear-gradient(90deg,#f4c430 0 33%,#2860c4 33% 66%,#d64020 66% 100%);opacity:.9}
+  .brandtxt h1{margin:0;font-size:20px;font-weight:700;letter-spacing:-.2px;line-height:1}
+  .brandtxt span{font-size:12px;color:var(--muted)}
+  .htools{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .pill{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;
+    padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer}
+  .pill .dot{width:8px;height:8px;border-radius:50%;background:#c3bcae}
+  .pill.on{color:var(--brand-d);background:var(--brand-soft);border-color:#cfe6da}
+  .pill.on .dot{background:var(--brand);box-shadow:0 0 0 3px rgba(21,119,74,.15)}
+  .iconbtn{width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:var(--surface);
+    cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+  .iconbtn:hover{color:var(--ink);border-color:#ddd3c1}
+
+  /* Tabs */
+  .tabsWrap{display:flex;justify-content:center;padding:14px 0 6px}
+  .tabs{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px;box-shadow:var(--sh-sm);gap:3px}
+  .tab{border:none;background:none;padding:9px 18px;border-radius:999px;font-weight:600;font-size:14px;color:var(--muted);cursor:pointer;display:flex;gap:7px;align-items:center;font-family:inherit}
+  .tab.active{background:var(--brand);color:#fff;box-shadow:0 6px 16px -8px rgba(21,119,74,.7)}
+
+  /* Local banner */
+  .banner{max-width:1120px;margin:6px auto 0;padding:0 20px}
+  .banner .inner{display:flex;align-items:center;gap:12px;background:var(--amber-soft);border:1px solid #f0e0bf;
+    border-radius:14px;padding:11px 15px;font-size:13.5px;color:#7a5c14}
+  .banner .inner b{color:#5f470f}
+  .banner button{margin-left:auto}
+  .hidden{display:none!important}
+
+  main{padding:22px 0 60px}
+  .panel{display:none;animation:fade .28s ease}
+  .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .phead{margin-bottom:18px}
+  .phead h2{margin:0 0 3px;font-size:26px;font-weight:600;letter-spacing:-.4px}
+  .phead p{margin:0;color:var(--muted);font-size:14px;max-width:640px}
+
+  /* Buttons / inputs */
+  .btn{border:none;border-radius:12px;padding:11px 17px;font-weight:600;cursor:pointer;font-size:14px;font-family:inherit;
+    background:var(--brand);color:#fff;transition:.15s;display:inline-flex;gap:8px;align-items:center;box-shadow:0 8px 20px -12px rgba(21,119,74,.8)}
+  .btn:hover{background:var(--brand-d)}
+  .btn:disabled{opacity:.55;cursor:default;box-shadow:none}
+  .btn.amber{background:var(--amber);color:#3f2d05;box-shadow:none}
+  .btn.amber:hover{filter:brightness(.97)}
+  .btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+  .btn.ghost:hover{border-color:#d8cdbb}
+  .btn.sm{padding:8px 13px;font-size:13px;border-radius:10px}
+  input,select,textarea{font-family:inherit;font-size:14px;padding:11px 13px;border:1px solid var(--line);
+    border-radius:11px;background:#fff;color:var(--ink);width:100%}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+
+  /* Despensa */
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:var(--surface);padding:14px;
+    border:1px solid var(--line);border-radius:var(--r);margin-bottom:20px;box-shadow:var(--sh-sm)}
+  .toolbar .grow{flex:1;min-width:170px}
+  .toolbar select{width:auto;min-width:150px}
+  .catgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:16px}
+  .catcard{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--surface);box-shadow:var(--sh-sm)}
+  .catcard h3{margin:0;padding:13px 15px;font-size:14.5px;font-weight:600;display:flex;align-items:center;gap:9px;
+    background:var(--surface-2);border-bottom:1px solid var(--line)}
+  .catcard h3 .ico{width:26px;height:26px;border-radius:8px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:15px}
+  .catcard h3 .count{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:600;font-family:'Inter';
+    background:#fff;border:1px solid var(--line);padding:2px 8px;border-radius:999px}
+  .items{padding:6px 12px;max-height:290px;overflow:auto}
+  .item{display:flex;align-items:center;gap:11px;padding:8px 3px;border-bottom:1px solid #f3ede1}
+  .item:last-child{border-bottom:none}
+  .item label{flex:1;cursor:pointer;font-size:14px}
+  .chk{appearance:none;-webkit-appearance:none;width:20px;height:20px;border:2px solid #d5cbb9;border-radius:6px;cursor:pointer;position:relative;flex:none;transition:.12s}
+  .chk:checked{background:var(--brand);border-color:var(--brand)}
+  .chk:checked::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .item.have label{color:var(--brand-d);font-weight:600}
+  .item .del{background:none;border:none;color:#ccc2b2;cursor:pointer;font-size:15px;line-height:1;padding:4px}
+  .item .del:hover{color:var(--terra)}
+  .pantry-empty{color:var(--muted);font-size:13px;padding:10px 4px}
+
+  /* Recetas */
+  .searchbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  .searchbar .grow{flex:1;min-width:200px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+  .chip{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 14px;
+    font-size:13px;cursor:pointer;font-weight:600;color:var(--ink);transition:.14s}
+  .chip:hover{border-color:var(--brand);color:var(--brand-d)}
+  .chip.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(216px,1fr));gap:18px}
+  .rcard{border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--surface);cursor:pointer;
+    transition:.2s;display:flex;flex-direction:column;box-shadow:var(--sh-sm)}
+  .rcard:hover{transform:translateY(-5px);box-shadow:var(--sh);border-color:#e0d6c4}
+  .rthumb{height:148px;background-size:cover;background-position:center;position:relative;
+    display:flex;align-items:center;justify-content:center;font-size:52px}
+  .rthumb.grad::before{content:"";position:absolute;inset:0;background:
+    radial-gradient(circle at 30% 25%,rgba(255,255,255,.28),transparent 60%);}
+  .rthumb .emoji{filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));z-index:1}
+  .rpill{position:absolute;top:10px;font-size:11px;font-weight:700;padding:5px 10px;border-radius:999px;
+    backdrop-filter:blur(6px);display:inline-flex;align-items:center;gap:5px}
+  .rpill.cat{left:10px;background:rgba(255,255,255,.9);color:var(--ink)}
+  .rpill.match{right:10px;background:rgba(21,119,74,.92);color:#fff}
+  .rpill.match .dot{width:6px;height:6px;border-radius:50%;background:#bff0d4}
+  .rbody{padding:13px 14px 15px}
+  .rbody h4{margin:0 0 4px;font-size:15.5px;font-weight:600;line-height:1.2}
+  .rbody .meta{color:var(--muted);font-size:12.5px;font-family:'Inter'}
+  .loading{text-align:center;color:var(--muted);padding:44px;font-size:14px;grid-column:1/-1}
+  .spin{display:inline-block;width:18px;height:18px;border:3px solid var(--line);border-top-color:var(--brand);
+    border-radius:50%;animation:sp .8s linear infinite;vertical-align:middle;margin-right:9px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  /* Modal */
+  .modal{position:fixed;inset:0;background:rgba(30,22,10,.5);display:none;align-items:center;justify-content:center;padding:16px;z-index:60;backdrop-filter:blur(2px)}
+  .modal.open{display:flex}
+  .sheet{background:#fff;border-radius:22px;max-width:640px;width:100%;max-height:90vh;overflow:auto;position:relative;box-shadow:var(--sh)}
+  .sheet .hero{height:200px;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-size:82px;position:relative}
+  .sheet .hero .emoji{filter:drop-shadow(0 6px 12px rgba(0,0,0,.22))}
+  .close{position:absolute;top:13px;right:13px;background:rgba(255,255,255,.95);border:none;width:38px;height:38px;
+    border-radius:50%;font-size:18px;cursor:pointer;box-shadow:var(--sh-sm);z-index:2}
+  .sheet-body{padding:22px 24px 26px}
+  .sheet-body h3{margin:0 0 3px;font-size:24px;font-weight:600;letter-spacing:-.3px}
+  .tags{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 18px}
+  .tag{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:12px;color:var(--muted);font-weight:600}
+  .sec-t{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--brand-d);margin:0 0 8px}
+  .ing-list{list-style:none;padding:0;margin:0 0 20px}
+  .ing-list li{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid #f3ede1;font-size:14px}
+  .ing-list .q{color:var(--muted);font-size:12.5px;margin-left:auto;text-align:right}
+  .dot9{width:9px;height:9px;border-radius:50%;flex:none}
+  .dot9.yes{background:var(--brand)} .dot9.no{background:var(--terra)}
+  .steps{padding-left:20px;margin:0} .steps li{margin-bottom:11px;font-size:14px;line-height:1.55}
+  .yt{display:inline-flex;gap:8px;align-items:center;margin-top:6px;color:var(--terra);font-weight:700;text-decoration:none}
+
+  /* Settings modal */
+  .set-body{padding:24px}
+  .set-body h3{margin:0 0 4px;font-size:22px;font-weight:600}
+  .set-body p.lead{margin:0 0 18px;color:var(--muted);font-size:13.5px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+  .field .hint{font-size:12px;color:var(--muted);margin-top:5px}
+  textarea{min-height:120px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;resize:vertical}
+  .set-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+  .statusline{margin-top:14px;font-size:13px;padding:10px 13px;border-radius:11px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+  .statusline.ok{background:var(--brand-soft);border-color:#cfe6da;color:var(--brand-d)}
+  .statusline.err{background:var(--terra-soft);border-color:#eecabe;color:#9a3620}
+
+  /* Menú */
+  .menuctrl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px;background:var(--surface);
+    padding:14px;border-radius:var(--r);border:1px solid var(--line);box-shadow:var(--sh-sm)}
+  .menuctrl label{font-size:13.5px;font-weight:600}
+  .menuctrl select{width:auto;min-width:210px}
+  .daygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px;margin-bottom:28px}
+  .day{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--surface);box-shadow:var(--sh-sm)}
+  .day h4{margin:0;padding:11px 15px;background:var(--surface-2);color:var(--ink);font-size:15px;font-weight:600;text-transform:capitalize;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+  .day h4::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--brand)}
+  .meal{display:flex;gap:12px;padding:12px 14px;border-bottom:1px solid #f3ede1;cursor:pointer;align-items:center}
+  .meal:last-child{border-bottom:none}
+  .meal:hover{background:var(--surface-2)}
+  .meal .mthumb{width:54px;height:54px;border-radius:12px;background-size:cover;background-position:center;flex:none;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:var(--sh-sm)}
+  .meal .mlabel{font-size:10.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+  .meal .mname{font-size:14.5px;font-weight:600;line-height:1.2;margin:1px 0}
+  .meal .mmatch{font-size:11.5px;color:var(--brand);font-weight:600}
+  .shop{border:1px solid var(--line);border-left:5px solid var(--amber);border-radius:var(--r);padding:20px 22px;background:var(--surface);box-shadow:var(--sh-sm)}
+  .shop h3{margin:0;font-size:19px;font-weight:600;display:flex;align-items:center;gap:9px}
+  .shop .cnt{font-size:12.5px;color:var(--muted);font-weight:600;font-family:'Inter';background:var(--amber-soft);border:1px solid #f0e0bf;padding:2px 10px;border-radius:999px}
+  .shop .lead{margin:6px 0 0;color:var(--muted);font-size:13px}
+  .shopcat{margin-top:16px}
+  .shopcat h5{margin:0 0 8px;font-size:12px;color:var(--brand-d);text-transform:uppercase;letter-spacing:.6px;font-family:'Inter';font-weight:700;display:flex;align-items:center;gap:7px}
+  .shopitems{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:4px 18px}
+  .shopitem{display:flex;align-items:center;gap:9px;padding:6px 0;font-size:14px}
+  .shopitem.done label{text-decoration:line-through;color:var(--muted)}
+  .empty{text-align:center;color:var(--muted);padding:56px 16px}
+  .empty .big{font-size:50px;margin-bottom:10px}
+  .empty p{font-size:14.5px;line-height:1.6}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--ink);color:#fff;
+    padding:13px 22px;border-radius:13px;font-size:14px;box-shadow:var(--sh);transition:.3s;z-index:99;opacity:0}
+  .toast.show{transform:translateX(-50%);opacity:1}
+  footer{text-align:center;color:var(--muted);font-size:12px;padding:0 16px 34px}
+  @media print{
+    header,.tabsWrap,.banner,.menuctrl,.searchbar,.chips,footer{display:none!important}
+    .panel{display:none!important}.panel#p-menu{display:block!important}
+    .shop{border-color:#ccc}.meal{cursor:default}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="container hbar">
+    <div class="logo">🍲</div>
+    <div class="brandtxt"><h1>Mi Cocina</h1><span>Despensa · Recetas · Menú semanal</span></div>
+    <div class="htools">
+      <button class="pill" id="syncPill"><span class="dot"></span><span id="syncText">Modo local</span></button>
+      <button class="iconbtn" id="gearBtn" title="Sincronizar entre dispositivos">⚙️</button>
+    </div>
+  </div>
+  <div class="tabsWrap"><div class="tabs">
+    <button class="tab active" data-tab="despensa">🧺 Despensa</button>
+    <button class="tab" data-tab="recetas">📖 Recetas</button>
+    <button class="tab" data-tab="menu">📅 Menú semanal</button>
+  </div></div>
+</header>
+
+<div class="banner" id="localBanner">
+  <div class="inner">🔗 <div><b>Modo local:</b> los datos se guardan solo en este dispositivo. Activa la sincronización para compartir tu despensa y menú entre celular y computador.</div>
+  <button class="btn amber sm" id="bannerSync">Activar sincronización</button></div>
+</div>
+
+<main class="container">
+  <!-- DESPENSA -->
+  <section class="panel active" id="p-despensa">
+    <div class="phead"><h2>Mi despensa</h2><p>Marca lo que tienes en casa, agrega lo que quieras y organízalo por categorías. Se usa para armar tu menú.</p></div>
+    <div class="toolbar">
+      <input class="grow" id="newIng" placeholder="Agregar ingrediente (ej. papa criolla)…" />
+      <select id="newCat"></select>
+      <button class="btn amber" id="addBtn">＋ Agregar</button>
+      <button class="btn ghost sm" id="checkAll">Marcar todo</button>
+      <button class="btn ghost sm" id="uncheckAll">Desmarcar</button>
+    </div>
+    <div class="catgrid" id="catGrid"></div>
+  </section>
+
+  <!-- RECETAS -->
+  <section class="panel" id="p-recetas">
+    <div class="phead"><h2>Recetas</h2><p>Recetas colombianas siempre disponibles y búsqueda en vivo por internet de platos del mundo, con fotos, pasos y video.</p></div>
+    <div class="searchbar">
+      <input class="grow" id="searchInp" placeholder="Buscar por nombre o ingrediente (pollo, pasta, lentejas)…" />
+      <button class="btn" id="searchBtn">🔍 Buscar en internet</button>
+    </div>
+    <div class="chips">
+      <span class="chip active" data-filter="colombia">🇨🇴 Colombianas</span>
+      <span class="chip" data-area="Italian">🇮🇹 Italianas</span>
+      <span class="chip" data-area="Mexican">🌮 Mexicanas</span>
+      <span class="chip" data-area="Spanish">🥘 Españolas</span>
+      <span class="chip" data-area="Chinese">🥢 Chinas</span>
+      <span class="chip" data-filter="disponibles">✅ Con lo que tengo</span>
+    </div>
+    <div class="cards" id="recipeCards"></div>
+  </section>
+
+  <!-- MENU -->
+  <section class="panel" id="p-menu">
+    <div class="phead"><h2>Menú de la semana</h2><p>Almuerzo y cena para 1–2 personas, priorizando lo que ya tienes. Al final, tu lista de mercado con lo que falta.</p></div>
+    <div class="menuctrl">
+      <label>Recetas del mundo:</label>
+      <select id="worldMix">
+        <option value="mixto" selected>Mezclar colombiano + mundo</option>
+        <option value="solo-col">Solo colombianas</option>
+        <option value="mas-mundo">Más recetas del mundo</option>
+      </select>
+      <button class="btn" id="genBtn">✨ Generar menú semanal</button>
+      <button class="btn ghost sm" id="printBtn">🖨️ Imprimir / PDF</button>
+    </div>
+    <div id="menuArea">
+      <div class="empty"><div class="big">📅</div>
+        <p>Aún no has generado tu menú.<br>Marca lo que tienes en <b>Despensa</b> y pulsa <b>Generar menú semanal</b>.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer>Hecho con ♥ para cocinar rico · Recetas del mundo vía TheMealDB · Sincronización opcional con Firebase</footer>
+
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+
+<div class="modal" id="settings"><div class="sheet"><div class="set-body">
+  <button class="close" onclick="closeSettings()">✕</button>
+  <h3>Sincronizar entre dispositivos</h3>
+  <p class="lead">Comparte tu despensa, menú y lista de mercado entre tus dispositivos en tiempo real usando Firebase (gratis). Los pasos para obtener la configuración están en el archivo README.</p>
+  <div class="field">
+    <label>Código de tu cocina</label>
+    <input id="roomInp" placeholder="ej. cocina-silvia" value="casa">
+    <div class="hint">Usa el mismo código en todos los dispositivos que quieras conectar.</div>
+  </div>
+  <div class="field">
+    <label>Configuración de Firebase</label>
+    <textarea id="cfgInp" placeholder='Pega aquí el objeto firebaseConfig, por ejemplo:&#10;{&#10;  apiKey: "…",&#10;  authDomain: "…",&#10;  databaseURL: "https://….firebasedatabase.app",&#10;  projectId: "…",&#10;  appId: "…"&#10;}'></textarea>
+    <div class="hint">Debe incluir <b>databaseURL</b> (Realtime Database).</div>
+  </div>
+  <div class="set-actions">
+    <button class="btn" id="connectBtn">🔗 Conectar</button>
+    <button class="btn ghost" id="disconnectBtn">Desconectar</button>
+  </div>
+  <div class="statusline" id="syncStatus">Estado: modo local (sin sincronizar).</div>
+</div></div></div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase (opcional) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* ============================================================ DATOS ============================================================ */
+const CATS = {
+  vegetales:{n:'Vegetales',e:'🥬'}, frutas:{n:'Frutas',e:'🍎'}, carnes:{n:'Carnes y pescados',e:'🍖'},
+  granos:{n:'Granos y legumbres',e:'🫘'}, cereales:{n:'Cereales y harinas',e:'🌾'}, lacteos:{n:'Lácteos y huevos',e:'🧀'},
+  condimentos:{n:'Condimentos y especias',e:'🧂'}, otros:{n:'Otros',e:'🛒'}
+};
+const CAT_ORDER = ['vegetales','frutas','carnes','granos','cereales','lacteos','condimentos','otros'];
+
+const PANTRY_DEFAULTS = [
+  ['Cebolla cabezona','vegetales'],['Cebolla larga','vegetales'],['Tomate','vegetales'],['Ajo','vegetales'],
+  ['Papa','vegetales'],['Papa criolla','vegetales'],['Zanahoria','vegetales'],['Pimentón','vegetales'],['Cilantro','vegetales'],
+  ['Plátano verde','vegetales'],['Plátano maduro','vegetales'],['Yuca','vegetales'],['Mazorca','vegetales'],
+  ['Aguacate','frutas'],['Limón','frutas'],['Coco','frutas'],
+  ['Pollo','carnes'],['Carne de res','carnes'],['Carne molida','carnes'],['Cerdo','carnes'],
+  ['Pescado (tilapia/mojarra)','carnes'],['Camarón','carnes'],['Chicharrón','carnes'],
+  ['Frijol rojo','granos'],['Lentejas','granos'],['Arveja','granos'],['Garbanzo','granos'],
+  ['Arroz','cereales'],['Harina de maíz (arepa)','cereales'],['Pasta','cereales'],['Pan','cereales'],
+  ['Huevo','lacteos'],['Leche','lacteos'],['Queso','lacteos'],['Crema de leche','lacteos'],['Mantequilla','lacteos'],
+  ['Sal','condimentos'],['Pimienta','condimentos'],['Comino','condimentos'],['Color/achiote','condimentos'],
+  ['Caldo de gallina','condimentos'],['Aceite','condimentos'],['Panela','condimentos'],['Azúcar','condimentos'],
+  ['Guascas','condimentos'],['Alcaparras','otros']
+];
+
+const COL = [
+ {id:'col-ajiaco',nombre:'Ajiaco Santafereño',tipo:['almuerzo'],e:'🍲',grad:['#2e9e5b','#0a4fb8'],tiempo:'60 min',region:'Bogotá',
+  ing:[['Pollo','2 pechugas','carnes'],['Papa criolla','300 g','vegetales'],['Papa','2 unidades','vegetales'],['Mazorca','2 trozos','vegetales'],['Guascas','2 cdas','condimentos'],['Crema de leche','1/2 taza','lacteos'],['Alcaparras','2 cdas','otros'],['Aguacate','1 unidad','frutas'],['Cilantro','al gusto','vegetales'],['Cebolla larga','1 tallo','vegetales']],
+  pasos:['Cocina el pollo con cebolla larga y sal hasta ablandar; reserva y desmecha.','Agrega las tres papas y la mazorca al caldo; cocina hasta que la criolla se deshaga y espese.','Añade las guascas y el pollo desmechado 10 min.','Sirve con crema de leche, alcaparras y aguacate aparte.']},
+ {id:'col-bandeja',nombre:'Bandeja Paisa',tipo:['almuerzo'],e:'🍛',grad:['#CE1126','#FCD116'],tiempo:'50 min',region:'Antioquia',
+  ing:[['Frijol rojo','1 taza','granos'],['Arroz','1 taza','cereales'],['Carne molida','200 g','carnes'],['Chicharrón','150 g','carnes'],['Huevo','2 unidades','lacteos'],['Plátano maduro','1 unidad','vegetales'],['Aguacate','1 unidad','frutas'],['Tomate','1 unidad','vegetales'],['Cebolla cabezona','1/2','vegetales']],
+  pasos:['Cocina el frijol previamente remojado hasta ablandar.','Prepara el arroz blanco.','Guisa la carne molida con hogao de tomate y cebolla.','Fríe el chicharrón, el plátano maduro y los huevos.','Monta todo en el plato con tajadas de aguacate.']},
+ {id:'col-sancocho',nombre:'Sancocho de Gallina',tipo:['almuerzo'],e:'🥘',grad:['#0a4fb8','#2e9e5b'],tiempo:'75 min',region:'Valle',
+  ing:[['Pollo','4 presas','carnes'],['Yuca','2 trozos','vegetales'],['Plátano verde','1 unidad','vegetales'],['Papa','2 unidades','vegetales'],['Mazorca','2 trozos','vegetales'],['Cilantro','al gusto','vegetales'],['Cebolla larga','1 tallo','vegetales'],['Ajo','2 dientes','vegetales']],
+  pasos:['Sofríe cebolla, ajo y cilantro; añade el pollo y agua.','Agrega mazorca y plátano en trozos; cocina 20 min.','Incorpora yuca y papa hasta que todo esté tierno.','Rectifica sal y sirve con arroz aparte.']},
+ {id:'col-arrozpollo',nombre:'Arroz con Pollo',tipo:['almuerzo','cena'],e:'🍚',grad:['#FCD116','#2e9e5b'],tiempo:'40 min',region:'Colombia',
+  ing:[['Arroz','1.5 tazas','cereales'],['Pollo','2 pechugas','carnes'],['Arveja','1/2 taza','granos'],['Zanahoria','1 unidad','vegetales'],['Pimentón','1/2','vegetales'],['Cebolla cabezona','1/2','vegetales'],['Ajo','2 dientes','vegetales'],['Caldo de gallina','1 cubo','condimentos'],['Cilantro','al gusto','vegetales']],
+  pasos:['Cocina y desmecha el pollo; reserva el caldo.','Sofríe cebolla, ajo, pimentón y zanahoria.','Añade el arroz, la arveja y el caldo; cocina tapado.','Al secar, mezcla el pollo y el cilantro.']},
+ {id:'col-frijoles',nombre:'Frijoles Antioqueños',tipo:['almuerzo'],e:'🫘',grad:['#8a4b2b','#CE1126'],tiempo:'60 min',region:'Antioquia',
+  ing:[['Frijol rojo','2 tazas','granos'],['Plátano maduro','1 unidad','vegetales'],['Zanahoria','1 unidad','vegetales'],['Tomate','2 unidades','vegetales'],['Cebolla cabezona','1','vegetales'],['Ajo','2 dientes','vegetales'],['Comino','1 cdta','condimentos']],
+  pasos:['Remoja el frijol la noche anterior.','Cocínalo con zanahoria y plátano maduro picado.','Añade un hogao de tomate, cebolla, ajo y comino.','Cocina a fuego bajo hasta espesar.']},
+ {id:'col-sudadopollo',nombre:'Sudado de Pollo',tipo:['almuerzo','cena'],e:'🍗',grad:['#e08a1e','#CE1126'],tiempo:'40 min',region:'Colombia',
+  ing:[['Pollo','4 presas','carnes'],['Papa','3 unidades','vegetales'],['Tomate','2 unidades','vegetales'],['Cebolla cabezona','1','vegetales'],['Ajo','2 dientes','vegetales'],['Cilantro','al gusto','vegetales'],['Comino','1 cdta','condimentos']],
+  pasos:['Haz un hogao con tomate, cebolla, ajo y comino.','Añade el pollo y sella.','Agrega papa en trozos y un poco de agua.','Cocina tapado hasta que la papa esté blanda; sirve con arroz.']},
+ {id:'col-lentejas',nombre:'Lentejas Guisadas',tipo:['almuerzo','cena'],e:'🍲',grad:['#7a5c2e','#e08a1e'],tiempo:'35 min',region:'Colombia',
+  ing:[['Lentejas','1.5 tazas','granos'],['Zanahoria','1 unidad','vegetales'],['Papa','1 unidad','vegetales'],['Tomate','1 unidad','vegetales'],['Cebolla cabezona','1/2','vegetales'],['Ajo','2 dientes','vegetales'],['Comino','1 cdta','condimentos']],
+  pasos:['Cocina las lentejas con zanahoria y papa en cubos.','Aparte, prepara un hogao con tomate, cebolla y ajo.','Une el hogao a las lentejas y añade comino.','Cocina 10 min más; sirve con arroz.']},
+ {id:'col-mojarra',nombre:'Mojarra Frita con Patacón',tipo:['almuerzo','cena'],e:'🐟',grad:['#0a4fb8','#5bc0eb'],tiempo:'30 min',region:'Costa',
+  ing:[['Pescado (tilapia/mojarra)','2 unidades','carnes'],['Plátano verde','2 unidades','vegetales'],['Limón','2 unidades','frutas'],['Ajo','2 dientes','vegetales'],['Aceite','para freír','condimentos'],['Sal','al gusto','condimentos']],
+  pasos:['Sazona el pescado con limón, ajo y sal.','Fríelo hasta dorar por ambos lados.','Fríe el plátano, aplástalo y vuelve a freír para el patacón.','Sirve con ensalada fresca.']},
+ {id:'col-sobrebarriga',nombre:'Sobrebarriga en Salsa Criolla',tipo:['almuerzo'],e:'🥩',grad:['#8a2b2b','#e08a1e'],tiempo:'90 min',region:'Cundinamarca',
+  ing:[['Carne de res','500 g sobrebarriga','carnes'],['Tomate','3 unidades','vegetales'],['Cebolla cabezona','1','vegetales'],['Cerveza','1 lata','otros'],['Ajo','3 dientes','vegetales'],['Papa','3 unidades','vegetales']],
+  pasos:['Cocina la sobrebarriga hasta ablandar (u olla a presión).','Prepara salsa criolla con tomate, cebolla, ajo y cerveza.','Baña la carne y hornea o cocina a fuego bajo.','Sirve con papas cocidas.']},
+ {id:'col-desmechada',nombre:'Carne Desmechada Sudada',tipo:['almuerzo','cena'],e:'🍖',grad:['#a33333','#FCD116'],tiempo:'70 min',region:'Colombia',
+  ing:[['Carne de res','400 g','carnes'],['Tomate','2 unidades','vegetales'],['Cebolla cabezona','1','vegetales'],['Pimentón','1/2','vegetales'],['Ajo','2 dientes','vegetales'],['Comino','1 cdta','condimentos'],['Arroz','1 taza','cereales']],
+  pasos:['Cocina la carne hasta ablandar y desmecha.','Sofríe tomate, cebolla, pimentón y ajo.','Une la carne desmechada al hogao con comino.','Sirve con arroz blanco.']},
+ {id:'col-arrozcoco',nombre:'Arroz con Coco',tipo:['almuerzo','cena'],e:'🥥',grad:['#c9a227','#e8d59a'],tiempo:'45 min',region:'Costa',
+  ing:[['Arroz','2 tazas','cereales'],['Coco','1 unidad','frutas'],['Uva pasa','1/4 taza','otros'],['Azúcar','2 cdas','condimentos'],['Sal','1 cdta','condimentos']],
+  pasos:['Extrae la leche del coco y cocínala hasta obtener el titoté.','Añade el arroz, la uva pasa, azúcar y sal.','Agrega agua y cocina tapado.','Deja secar a fuego bajo.']},
+ {id:'col-cazuela',nombre:'Cazuela de Mariscos',tipo:['almuerzo','cena'],e:'🦐',grad:['#e07a3e','#CE1126'],tiempo:'40 min',region:'Costa',
+  ing:[['Camarón','200 g','carnes'],['Pescado (tilapia/mojarra)','150 g','carnes'],['Coco','1/2 taza leche','frutas'],['Crema de leche','1/2 taza','lacteos'],['Cebolla cabezona','1/2','vegetales'],['Ajo','2 dientes','vegetales'],['Cilantro','al gusto','vegetales']],
+  pasos:['Sofríe cebolla, ajo y pimentón.','Añade los mariscos y sella.','Incorpora leche de coco y crema.','Cocina 10 min y termina con cilantro.']},
+ {id:'col-sopaplatano',nombre:'Sopa de Plátano',tipo:['almuerzo','cena'],e:'🍌',grad:['#2e9e5b','#c9a227'],tiempo:'35 min',region:'Colombia',
+  ing:[['Plátano verde','2 unidades','vegetales'],['Carne de res','200 g costilla','carnes'],['Cilantro','al gusto','vegetales'],['Cebolla larga','1 tallo','vegetales'],['Ajo','2 dientes','vegetales'],['Papa','1 unidad','vegetales']],
+  pasos:['Cocina la costilla con cebolla y ajo para el caldo.','Ralla o licúa parte del plátano y añádelo al caldo.','Agrega papa en cubos.','Cocina hasta espesar y termina con cilantro.']},
+ {id:'col-arrozatollado',nombre:'Arroz Atollado Valluno',tipo:['almuerzo'],e:'🍚',grad:['#e08a1e','#2e9e5b'],tiempo:'55 min',region:'Valle',
+  ing:[['Arroz','2 tazas','cereales'],['Cerdo','200 g','carnes'],['Pollo','1 pechuga','carnes'],['Papa','2 unidades','vegetales'],['Cebolla larga','2 tallos','vegetales'],['Cilantro','al gusto','vegetales'],['Color/achiote','1 cdta','condimentos']],
+  pasos:['Sofríe las carnes con cebolla larga y achiote.','Añade papa y caldo.','Incorpora el arroz y cocina removiendo (quedará meloso).','Termina con abundante cilantro.']},
+ {id:'col-huevospericos',nombre:'Huevos Pericos con Arepa',tipo:['cena'],e:'🍳',grad:['#FCD116','#e08a1e'],tiempo:'15 min',region:'Colombia',
+  ing:[['Huevo','3 unidades','lacteos'],['Tomate','1 unidad','vegetales'],['Cebolla larga','1 tallo','vegetales'],['Harina de maíz (arepa)','1 taza','cereales'],['Sal','al gusto','condimentos']],
+  pasos:['Sofríe tomate y cebolla larga picados.','Añade los huevos y revuelve suave.','Asa las arepas de maíz.','Sirve caliente.']},
+ {id:'col-patacon',nombre:'Patacones con Hogao',tipo:['cena'],e:'🍟',grad:['#c9a227','#2e9e5b'],tiempo:'25 min',region:'Costa',
+  ing:[['Plátano verde','2 unidades','vegetales'],['Tomate','2 unidades','vegetales'],['Cebolla cabezona','1/2','vegetales'],['Ajo','1 diente','vegetales'],['Aceite','para freír','condimentos'],['Sal','al gusto','condimentos']],
+  pasos:['Fríe rodajas de plátano, aplástalas y vuelve a freír.','Prepara hogao con tomate, cebolla y ajo.','Sala los patacones.','Sirve con el hogao encima o aparte.']},
+ {id:'col-crema',nombre:'Crema de Verduras',tipo:['cena'],e:'🥣',grad:['#2e9e5b','#5bc0eb'],tiempo:'30 min',region:'Colombia',
+  ing:[['Papa','2 unidades','vegetales'],['Zanahoria','1 unidad','vegetales'],['Cebolla cabezona','1/2','vegetales'],['Ajo','1 diente','vegetales'],['Crema de leche','1/4 taza','lacteos'],['Caldo de gallina','1 cubo','condimentos']],
+  pasos:['Cocina las verduras con el caldo.','Licúa hasta obtener una crema.','Regresa a la olla y añade la crema de leche.','Sirve con crotones o pan.']},
+ {id:'col-pastapollo',nombre:'Pasta en Salsa de Pollo',tipo:['almuerzo','cena'],e:'🍝',grad:['#c94f2f','#e0a53a'],tiempo:'30 min',region:'Colombia',
+  ing:[['Pasta','250 g','cereales'],['Pollo','1 pechuga','carnes'],['Tomate','2 unidades','vegetales'],['Cebolla cabezona','1/2','vegetales'],['Ajo','2 dientes','vegetales'],['Crema de leche','1/2 taza','lacteos'],['Queso','al gusto','lacteos']],
+  pasos:['Cocina la pasta al dente.','Saltea el pollo en cubos con cebolla y ajo.','Añade tomate y crema de leche; cocina 5 min.','Mezcla con la pasta y termina con queso.']}
+];
+
+/* ============================================================ NORMALIZACIÓN ============================================================ */
+const norm = s => (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
+  .replace(/\(.*?\)/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+const keyOf = s => norm(s).replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'') || 'x';
+
+const SYN = {
+  chicken:'pollo', pollo:'pollo', 'chicken breast':'pollo',
+  beef:'carne de res','minced beef':'carne de res','ground beef':'carne de res', res:'carne de res','carne de res':'carne de res','carne molida':'carne de res',
+  pork:'cerdo', bacon:'cerdo', cerdo:'cerdo',
+  fish:'pescado', salmon:'pescado', tilapia:'pescado', mojarra:'pescado', pescado:'pescado', prawn:'camaron', prawns:'camaron', shrimp:'camaron', camaron:'camaron',
+  onion:'cebolla', onions:'cebolla', cebolla:'cebolla','cebolla cabezona':'cebolla','cebolla larga':'cebolla larga','spring onion':'cebolla larga','green onion':'cebolla larga',
+  garlic:'ajo', ajo:'ajo',
+  tomato:'tomate', tomatoes:'tomate','chopped tomatoes':'tomate','tomato puree':'tomate', tomate:'tomate',
+  potato:'papa', potatoes:'papa', papa:'papa','papa criolla':'papa criolla',
+  carrot:'zanahoria', carrots:'zanahoria', zanahoria:'zanahoria',
+  pepper:'pimienta','bell pepper':'pimenton', pimenton:'pimenton', capsicum:'pimenton',
+  rice:'arroz', arroz:'arroz',
+  egg:'huevo', eggs:'huevo', huevo:'huevo',
+  milk:'leche', leche:'leche', cream:'crema de leche','creme fraiche':'crema de leche','crema de leche':'crema de leche','heavy cream':'crema de leche',
+  cheese:'queso', queso:'queso', parmesan:'queso', mozzarella:'queso','cheddar cheese':'queso',
+  butter:'mantequilla', mantequilla:'mantequilla',
+  oil:'aceite','olive oil':'aceite','vegetable oil':'aceite', aceite:'aceite',
+  salt:'sal', sal:'sal', sugar:'azucar', azucar:'azucar', panela:'panela',
+  flour:'harina', harina:'harina','plain flour':'harina',
+  pasta:'pasta', spaghetti:'pasta', lasagne:'pasta','lasagne sheets':'pasta', linguine:'pasta', penne:'pasta', macaroni:'pasta', fettuccine:'pasta',
+  lentils:'lentejas', lentejas:'lentejas', beans:'frijol','kidney beans':'frijol', frijol:'frijol','frijol rojo':'frijol',
+  peas:'arveja', arveja:'arveja','chick peas':'garbanzo', chickpeas:'garbanzo', garbanzo:'garbanzo',
+  plantain:'platano', platano:'platano','platano verde':'platano','platano maduro':'platano',
+  yuca:'yuca', cassava:'yuca', avocado:'aguacate', aguacate:'aguacate', lemon:'limon', lime:'limon', limon:'limon',
+  coconut:'coco','coconut milk':'coco', coco:'coco', corn:'mazorca', mazorca:'mazorca', sweetcorn:'mazorca',
+  cilantro:'cilantro', coriander:'cilantro','fresh coriander':'cilantro',
+  cumin:'comino', comino:'comino', guascas:'guascas', capers:'alcaparras', alcaparras:'alcaparras'
+};
+function canon(name){ const n=norm(name); if(SYN[n]) return SYN[n]; for(const k in SYN){ if(n.includes(k)) return SYN[k]; } return n; }
+function catOf(name){
+  const c=canon(name), low=(name||'').toLowerCase();
+  const map={
+    vegetales:['cebolla','cebolla larga','tomate','ajo','papa','papa criolla','zanahoria','pimenton','cilantro','platano','yuca','mazorca','lechuga','espinaca','apio','broccoli','celery'],
+    frutas:['aguacate','limon','coco','banano','manzana','fresa','mango','pina','naranja','uva'],
+    carnes:['pollo','carne de res','cerdo','pescado','camaron','tocino','jamon','chicharron'],
+    granos:['frijol','lentejas','arveja','garbanzo'], cereales:['arroz','harina','pasta','pan','avena','quinoa'],
+    lacteos:['huevo','leche','queso','crema de leche','mantequilla','yogur'],
+    condimentos:['sal','pimienta','comino','aceite','azucar','panela','color','achiote','caldo','vinagre','oregano','laurel','guascas','curry','soya','mostaza','miel','honey','basil','albahaca']
+  };
+  for(const cat in map){ if(map[cat].some(w=>c.includes(w)||low.includes(w))) return cat; } return 'otros';
+}
+
+/* ============================================================ ESTADO ============================================================ */
+const LS={pantry:'micocina_pantry_v2',menu:'micocina_menu_v2',shop:'micocina_shop_v2',cfg:'micocina_fb_cfg',room:'micocina_room'};
+let pantry=loadPantry();
+let currentMenu=JSON.parse(localStorage.getItem(LS.menu)||'null');
+let shopChecked=JSON.parse(localStorage.getItem(LS.shop)||'{}');
+let lastRecipeView=showColombian;
+
+function loadPantry(){
+  const s=localStorage.getItem(LS.pantry); if(s) return JSON.parse(s);
+  const p={}; PANTRY_DEFAULTS.forEach(([n,c])=>{ p[keyOf(n)]={name:n,cat:c,have:false}; }); return p;
+}
+function savePantry(){ localStorage.setItem(LS.pantry,JSON.stringify(pantry)); }
+function saveMenu(){ localStorage.setItem(LS.menu,JSON.stringify(currentMenu)); }
+function saveShop(){ localStorage.setItem(LS.shop,JSON.stringify(shopChecked)); }
+function haveSet(){ return new Set(Object.values(pantry).filter(x=>x&&x.have).map(x=>canon(x.name))); }
+
+/* ============================================================ SYNC (Firebase, opcional) ============================================================ */
+const Sync={
+  mode:'local', db:null, room:'casa',
+  base(){ return 'rooms/'+this.room; },
+  parseCfg(text){ if(typeof text!=='string') return text;
+    const a=text.indexOf('{'), b=text.lastIndexOf('}'); if(a<0||b<0) throw new Error('formato');
+    return (new Function('return ('+text.slice(a,b+1)+')'))(); },
+  connect(cfgText,room){
+    if(typeof firebase==='undefined'||!firebase.database) return {ok:false,err:'No se cargó Firebase (revisa tu conexión a internet).'};
+    let cfg; try{ cfg=this.parseCfg(cfgText); }catch(e){ return {ok:false,err:'No pude leer la configuración. Copia el objeto firebaseConfig completo (con llaves { }).'}; }
+    if(!cfg.databaseURL) return {ok:false,err:'Falta "databaseURL". Activa Realtime Database en Firebase y copia de nuevo la configuración.'};
+    try{ if(!firebase.apps.length) firebase.initializeApp(cfg); }catch(e){ return {ok:false,err:'Configuración inválida: '+e.message}; }
+    this.db=firebase.database(); this.room=(room||'casa').trim()||'casa'; this.mode='cloud';
+    localStorage.setItem(LS.cfg, typeof cfgText==='string'?cfgText:JSON.stringify(cfg));
+    localStorage.setItem(LS.room, this.room);
+    this.attach(); return {ok:true};
+  },
+  attach(){
+    const b=this.base();
+    this.db.ref(b+'/pantry').on('value',s=>{ const v=s.val();
+      if(!v){ this.seedPantry(); return; } pantry=v; savePantry(); renderPantry(); if(lastRecipeView) lastRecipeView(); });
+    this.db.ref(b+'/menu').on('value',s=>{ currentMenu=s.val()||null; saveMenu(); renderMenu(); });
+    this.db.ref(b+'/shop').on('value',s=>{ shopChecked=s.val()||{}; saveShop(); renderMenu(); });
+    updateStatus();
+  },
+  seedPantry(){ const p={}; PANTRY_DEFAULTS.forEach(([n,c])=>{ p[keyOf(n)]={name:n,cat:c,have:false}; }); this.db.ref(this.base()+'/pantry').set(p); },
+  writeItem(k){ if(this.mode==='cloud') this.db.ref(this.base()+'/pantry/'+k).set(pantry[k]); },
+  removeItem(k){ if(this.mode==='cloud') this.db.ref(this.base()+'/pantry/'+k).remove(); },
+  writeAllPantry(){ if(this.mode==='cloud') this.db.ref(this.base()+'/pantry').set(pantry); },
+  writeMenu(){ if(this.mode==='cloud') this.db.ref(this.base()+'/menu').set(currentMenu); },
+  writeShop(){ if(this.mode==='cloud') this.db.ref(this.base()+'/shop').set(shopChecked); },
+  disconnect(){ try{ if(this.db) this.db.ref(this.base()).off(); }catch(e){} this.mode='local';
+    localStorage.removeItem(LS.cfg); localStorage.removeItem(LS.room); updateStatus(); }
+};
+function updateStatus(){
+  const pill=document.getElementById('syncPill'), txt=document.getElementById('syncText'),
+        banner=document.getElementById('localBanner'), st=document.getElementById('syncStatus');
+  const cloud=Sync.mode==='cloud';
+  pill.classList.toggle('on',cloud);
+  txt.textContent = cloud?('Sincronizado · '+Sync.room):'Modo local';
+  banner.classList.toggle('hidden',cloud);
+  if(st){ st.className='statusline'+(cloud?' ok':'');
+    st.textContent = cloud?('✅ Conectado. Código de cocina: "'+Sync.room+'". Los cambios se comparten en tiempo real.')
+                          :'Estado: modo local (sin sincronizar).'; }
+}
+
+/* ============================================================ TABS / TOAST / MODALES ============================================================ */
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); document.getElementById('p-'+t.dataset.tab).classList.add('active');
+});
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2200); }
+function openSettings(){ document.getElementById('settings').classList.add('open'); }
+function closeSettings(){ document.getElementById('settings').classList.remove('open'); }
+document.getElementById('gearBtn').onclick=openSettings;
+document.getElementById('bannerSync').onclick=openSettings;
+document.getElementById('settings').onclick=e=>{ if(e.target.id==='settings') closeSettings(); };
+document.getElementById('connectBtn').onclick=()=>{
+  const cfg=document.getElementById('cfgInp').value.trim(), room=document.getElementById('roomInp').value.trim();
+  if(!cfg){ setSt('Pega tu configuración de Firebase primero.',true); return; }
+  const r=Sync.connect(cfg,room);
+  if(r.ok){ setSt('✅ Conectado. Sincronizando…',false); toast('Sincronización activada'); }
+  else setSt('⚠️ '+r.err,true);
+};
+document.getElementById('disconnectBtn').onclick=()=>{ Sync.disconnect(); setSt('Desconectado. Modo local.',false); toast('Sincronización desactivada'); };
+function setSt(msg,err){ const st=document.getElementById('syncStatus'); st.className='statusline'+(err?' err':''); st.textContent=msg; }
+
+/* ============================================================ DESPENSA ============================================================ */
+const catSel=document.getElementById('newCat');
+CAT_ORDER.forEach(k=>{ const o=document.createElement('option'); o.value=k; o.textContent=CATS[k].e+' '+CATS[k].n; catSel.appendChild(o); });
+
+function renderPantry(){
+  const grid=document.getElementById('catGrid'); grid.innerHTML='';
+  CAT_ORDER.forEach(cat=>{
+    const items=Object.entries(pantry).filter(([,v])=>v&&v.cat===cat);
+    const have=items.filter(([,v])=>v.have).length;
+    const card=document.createElement('div'); card.className='catcard';
+    card.innerHTML='<h3><span class="ico">'+CATS[cat].e+'</span>'+CATS[cat].n+'<span class="count">'+have+'/'+items.length+'</span></h3>';
+    const box=document.createElement('div'); box.className='items';
+    if(!items.length) box.innerHTML='<div class="pantry-empty">Sin ingredientes aún</div>';
+    items.sort((a,b)=>a[1].name.localeCompare(b[1].name)).forEach(([key,v])=>{
+      const row=document.createElement('div'); row.className='item'+(v.have?' have':'');
+      const id='chk_'+key;
+      row.innerHTML='<input type="checkbox" class="chk" id="'+id+'" '+(v.have?'checked':'')+'>'+
+        '<label for="'+id+'">'+v.name+'</label><button class="del" title="Eliminar">✕</button>';
+      row.querySelector('input').onchange=e=>{ pantry[key].have=e.target.checked; savePantry(); Sync.writeItem(key); renderPantry(); if(lastRecipeView) lastRecipeView(); };
+      row.querySelector('.del').onclick=()=>{ delete pantry[key]; savePantry(); Sync.removeItem(key); renderPantry(); };
+      box.appendChild(row);
+    });
+    card.appendChild(box); grid.appendChild(card);
+  });
+}
+document.getElementById('addBtn').onclick=()=>{
+  const inp=document.getElementById('newIng'), name=inp.value.trim(); if(!name) return;
+  const k=keyOf(name); pantry[k]={name,cat:catSel.value,have:true};
+  savePantry(); Sync.writeItem(k); inp.value=''; renderPantry(); toast('Agregado: '+name);
+};
+document.getElementById('newIng').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('addBtn').click(); });
+document.getElementById('checkAll').onclick=()=>{ Object.values(pantry).forEach(v=>v.have=true); savePantry(); Sync.writeAllPantry(); renderPantry(); if(lastRecipeView) lastRecipeView(); };
+document.getElementById('uncheckAll').onclick=()=>{ Object.values(pantry).forEach(v=>v.have=false); savePantry(); Sync.writeAllPantry(); renderPantry(); if(lastRecipeView) lastRecipeView(); };
